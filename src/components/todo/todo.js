@@ -1,37 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import TodoForm from './form.js';
 import TodoList from './list.js';
+import { Navbar, Container, Row, Col, Card } from 'react-bootstrap';
 
 import './todo.scss';
 
-class ToDo extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			list: [],
-		};
-	}
+const ToDo = () => {
+	const [list, setList] = useState([]);
 
-	addItem = (item) => {
+	const addItem = (item) => {
 		item._id = Math.random();
 		item.complete = false;
-		this.setState({ list: [...this.state.list, item] });
+		setList([...list, item]);
 	};
 
-	toggleComplete = (id) => {
-		let item = this.state.list.filter((i) => i._id === id)[0] || {};
+	const toggleComplete = (id) => {
+		let item = list.filter((i) => i._id === id)[0] || {};
 
 		if (item._id) {
 			item.complete = !item.complete;
-			let list = this.state.list.map((listItem) =>
+			let newList = list.map((listItem) =>
 				listItem._id === item._id ? item : listItem,
 			);
-			this.setState({ list });
+			setList(newList);
 		}
 	};
 
-	componentDidMount() {
-		let list = [
+	useEffect(() => {
+		document.title = `To Do List: incomplete ${
+			list.filter((item) => !item.complete).length
+		} `;
+	});
+
+	useEffect(() => {
+		let newList = [
 			{
 				_id: 1,
 				complete: false,
@@ -69,34 +71,41 @@ class ToDo extends React.Component {
 			},
 		];
 
-		this.setState({ list });
-	}
+		setList(newList);
+	}, []);
 
-	render() {
-		return (
-			<>
-				<header>
-					<h2>
-						There are {this.state.list.filter((item) => !item.complete).length}{' '}
-						Items To Complete
-					</h2>
-				</header>
+	return (
+		<>
+			<Navbar
+				expand="lg"
+				variant="dark"
+				bg="dark"
+				style={{ width: '80%', margin: '1rem auto 0', paddingLeft: '1rem' }}
+			>
+				<Navbar.Brand>
+					There are ({list.filter((item) => !item.complete).length}) Items To
+					Complete
+				</Navbar.Brand>
+			</Navbar>
 
-				<section className="todo">
-					<div>
-						<TodoForm handleSubmit={this.addItem} />
-					</div>
-
-					<div>
-						<TodoList
-							list={this.state.list}
-							handleComplete={this.toggleComplete}
-						/>
-					</div>
-				</section>
-			</>
-		);
-	}
-}
+			<Container fluid="md" style={{ marginTop: '5rem' }}>
+				<Row className="justify-content-md-center">
+					<Col sm={3}>
+						<Card>
+							<Card.Body>
+								<Card.Text>
+									<TodoForm handleSubmit={addItem} />
+								</Card.Text>
+							</Card.Body>
+						</Card>
+					</Col>
+					<Col md={{ span: 6, offset: 1 }}>
+						<TodoList list={list} handleComplete={toggleComplete} />
+					</Col>
+				</Row>
+			</Container>
+		</>
+	);
+};
 
 export default ToDo;
