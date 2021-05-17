@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import TodoForm from './form.js';
 import TodoList from './list.js';
 import useAjax from './../hooks/axiosHook';
@@ -6,9 +6,10 @@ import { Navbar, Container, Row, Col, Card } from 'react-bootstrap';
 
 import './todo.scss';
 
+const todoAPI = 'https://api-js401.herokuapp.com/api/v1/todo';
+
 const ToDo = () => {
-	const [list, _addItem, _toggleComplete, _getTodoItems, _deleteTask] =
-		useAjax();
+	const [list, fetchingData] = useAjax(todoAPI);
 
 	useEffect(() => {
 		document.title = `To Do List: incomplete ${
@@ -16,7 +17,7 @@ const ToDo = () => {
 		} `;
 	});
 
-	useEffect(_getTodoItems, []);
+	useEffect(fetchingData, []);
 
 	return (
 		<>
@@ -38,7 +39,7 @@ const ToDo = () => {
 						<Card>
 							<Card.Body>
 								<Card.Text>
-									<TodoForm handleSubmit={_addItem} />
+									<TodoForm handleSubmit={fetchingData} />
 								</Card.Text>
 							</Card.Body>
 						</Card>
@@ -46,8 +47,8 @@ const ToDo = () => {
 					<Col md={{ span: 5, offset: 1 }}>
 						<TodoList
 							list={list}
-							handleComplete={_toggleComplete}
-							handleDelete={_deleteTask}
+							handleComplete={fetchingData}
+							handleDelete={fetchingData}
 						/>
 					</Col>
 				</Row>

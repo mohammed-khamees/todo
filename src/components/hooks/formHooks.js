@@ -10,7 +10,7 @@ const useForm = (props) => {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		e.target.reset();
-		props.handleSubmit(item);
+		props.handleSubmit(1, 'post', item);
 		const items = {};
 		setItem({ items });
 	};
