@@ -8,7 +8,9 @@ const TodoList = (props) => {
 				<Toast
 					className={`complete-${item.complete.toString()}`}
 					key={item._id}
-					onClose={() => props.handleDelete(item._id)}
+					onClose={() => {
+						props.handleDelete(item._id, 'delete');
+					}}
 				>
 					<Toast.Header>
 						<Badge pill variant={item.complete ? 'success' : 'danger'}>
@@ -18,7 +20,11 @@ const TodoList = (props) => {
 							{item.assignee}
 						</strong>
 					</Toast.Header>
-					<Toast.Body onClick={() => props.handleComplete(item._id)}>
+					<Toast.Body
+						onClick={() => {
+							props.handleComplete(item._id, 'put');
+						}}
+					>
 						{item.text}
 						<div class="difficulty">Difficulty: {item.difficulty}</div>
 					</Toast.Body>
