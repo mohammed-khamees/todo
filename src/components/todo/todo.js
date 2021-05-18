@@ -1,20 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import TodoForm from './form.js';
 import TodoList from './list.js';
 import useAjax from './../hooks/axiosHook';
-import { Navbar, Container, Row, Col, Card } from 'react-bootstrap';
-
+import {
+	Navbar,
+	Container,
+	Row,
+	Col,
+	Card,
+	Pagination,
+	Form,
+} from 'react-bootstrap';
+import { PaginationContext } from './../context/pagination';
 import './todo.scss';
 
 const todoAPI = 'https://api-js401.herokuapp.com/api/v1/todo';
 
 const ToDo = () => {
-	const [list, fetchingData] = useAjax(todoAPI);
+	const fetchingData = useAjax(todoAPI);
+	const paginationContext = useContext(PaginationContext);
 
 	useEffect(() => {
 		document.title = `To Do List: incomplete ${
-			list.filter((item) => item.complete).length
-		} `;
+			paginationContext.items.filter((item) => item.complete).length
+		}`;
 	});
 
 	useEffect(fetchingData, []);
@@ -28,14 +37,69 @@ const ToDo = () => {
 				style={{ width: '80%', margin: '1rem auto 0', paddingLeft: '1rem' }}
 			>
 				<Navbar.Brand>
-					There are ({list.filter((item) => item.complete).length}) Items To
-					Complete
+					There are (
+					{paginationContext.items.filter((item) => item.complete).length})
+					Items To Complete
 				</Navbar.Brand>
 			</Navbar>
 
+			<Form
+				style={{
+					margin: '1rem auto 0',
+					width: '500px',
+					backgroundColor: 'rgb(219, 219, 219)',
+					padding: '0.5rem 1rem 0.5rem 2rem',
+				}}
+			>
+				<div key={`inline-radio`} className="mb-3">
+					<Form.Check
+						inline
+						label="completed To Do Item"
+						name="sort"
+						type="radio"
+						id={`inline-radio-1`}
+						onClick={() => {
+							paginationContext.setOffset(0);
+							paginationContext.setItems(
+								paginationContext.list.filter((item) => item.complete === true),
+							);
+						}}
+					/>
+					<Form.Check
+						inline
+						label="difficulty"
+						name="sort"
+						type="radio"
+						id={`inline-radio-2`}
+						onClick={() => {
+							paginationContext.setOffset(0);
+							let sorted = paginationContext.list.sort(
+								(a, b) => a.difficulty - b.difficulty,
+							);
+							paginationContext.setItems([...sorted]);
+						}}
+					/>
+					<Form.Check
+						inline
+						label="pending To Do Item"
+						name="sort"
+						type="radio"
+						id={`inline-radio-3`}
+						onClick={() => {
+							paginationContext.setOffset(0);
+							paginationContext.setItems(
+								paginationContext.list.filter(
+									(item) => item.complete === false,
+								),
+							);
+						}}
+					/>
+				</div>
+			</Form>
+
 			<Container fluid="md" style={{ marginTop: '5rem' }}>
 				<Row className="justify-content-md-center">
-					<Col sm={4}>
+					<Col sm={4} style={{ height: '350px' }}>
 						<Card>
 							<Card.Body>
 								<Card.Text>
@@ -44,14 +108,81 @@ const ToDo = () => {
 							</Card.Body>
 						</Card>
 					</Col>
-					<Col md={{ span: 5, offset: 1 }}>
+					<Col md={{ span: 5, offset: 1 }} style={{ height: '350px' }}>
 						<TodoList
-							list={list}
+							list={paginationContext.items}
 							handleComplete={fetchingData}
 							handleDelete={fetchingData}
 						/>
 					</Col>
 				</Row>
+				<Pagination style={{ margin: '1rem auto 0', width: '120px' }}>
+					<Pagination.Prev
+						disabled={!paginationContext.disable}
+						onClick={() => {
+							let count = paginationContext.page;
+							if (count > 1) --count;
+
+							let arr = [];
+
+							for (
+								let index = paginationContext.offset;
+								index < paginationContext.itemsNum;
+								index++
+							) {
+								arr.push(paginationContext.items[index]);
+							}
+
+							let offset = paginationContext.offset;
+							if (offset >= 3) offset -= 3;
+							if (paginationContext.offset < 3) {
+								paginationContext.setDisable(false);
+								offset = 0;
+							}
+
+							paginationContext.setOffset(offset);
+							paginationContext.setPage(count);
+						}}
+					/>
+					<Pagination.Next
+						disabled={paginationContext.disable}
+						onClick={() => {
+							let count = paginationContext.page;
+							let arr = [];
+							if (
+								Math.ceil(
+									paginationContext.items.length / paginationContext.itemsNum,
+								) > count
+							) {
+								++count;
+							}
+
+							for (
+								let index = paginationContext.offset;
+								index < paginationContext.itemsNum;
+								index++
+							) {
+								arr.push(paginationContext.items[index]);
+							}
+
+							let offset = paginationContext.offset;
+
+							if (offset < paginationContext.items.length) {
+								offset += 3;
+								paginationContext.setOffset(offset);
+								paginationContext.setPage(count);
+							}
+
+							if (offset > paginationContext.items.length) {
+								paginationContext.setDisable(true);
+								let rest = offset - paginationContext.items.length;
+								offset = offset - rest - 1;
+								paginationContext.setOffset(offset);
+								paginationContext.setPage(count);
+							}
+						}}
+					/>
+				</Pagination>
 			</Container>
 		</>
 	);

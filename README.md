@@ -9,3 +9,11 @@
 # UML
 
 ![UML](./uml.jpg)
+
+# to run the app
+
+1. `npm i`
+
+2. `npm start`
+
+3. `enjoy`
