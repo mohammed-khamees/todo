@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import superagent from 'superagent';
 dotenv.config();
 
-const API = process.env.REACT_APP_API_SERVER;
+const API = process.env.REACT_APP_API_SERVER_SignUp;
 
 export const LoginContext = React.createContext();
 
