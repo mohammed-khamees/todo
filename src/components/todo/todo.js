@@ -118,7 +118,6 @@ const ToDo = () => {
 				</Row>
 				<Pagination style={{ margin: '1rem auto 0', width: '120px' }}>
 					<Pagination.Prev
-						disabled={!paginationContext.disable}
 						onClick={() => {
 							let count = paginationContext.page;
 							if (count > 1) --count;
@@ -145,7 +144,6 @@ const ToDo = () => {
 						}}
 					/>
 					<Pagination.Next
-						disabled={paginationContext.disable}
 						onClick={() => {
 							let count = paginationContext.page;
 							let arr = [];

@@ -1,9 +1,13 @@
 import axios from 'axios';
 import { useContext } from 'react';
 import { PaginationContext } from './../context/pagination';
+import { LoginContext } from './../auth/context';
 
 const useAjax = (url) => {
 	const paginationContext = useContext(PaginationContext);
+	const loginContext = useContext(LoginContext);
+
+	console.log(loginContext.user.user.type);
 
 	let config = {
 		headers: {
@@ -20,13 +24,21 @@ const useAjax = (url) => {
 			paginationContext.setList([...results.data.results]);
 		}
 
-		if (method === 'post') {
+		if (
+			method === 'post' &&
+			(loginContext.user.user.type === 'admin' ||
+				loginContext.user.user.type === 'editor')
+		) {
 			item.due = new Date();
 			const results = await axios[method](url, item, config);
 			paginationContext.setItems([...paginationContext.items, results.data]);
 		}
 
-		if (method === 'put') {
+		if (
+			method === 'put' &&
+			(loginContext.user.user.type === 'admin' ||
+				loginContext.user.user.type === 'editor')
+		) {
 			let item = paginationContext.items.filter((i) => i._id === id)[0] || {};
 
 			if (item._id) {
@@ -40,7 +52,7 @@ const useAjax = (url) => {
 			}
 		}
 
-		if (method === 'delete') {
+		if (method === 'delete' && loginContext.user.user.type === 'admin') {
 			let item = paginationContext.items.find((i) => i._id === id) || {};
 
 			if (item._id) {
