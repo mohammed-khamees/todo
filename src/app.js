@@ -29,8 +29,6 @@ const App = () => {
 	return (
 		<>
 			<NavBar />
-			<EditLink />
-			<DeleteLink />
 			<If condition={loginContext.loggedIn}>
 				<Then>
 					<PaginationProvider>
@@ -41,7 +39,8 @@ const App = () => {
 					<div></div>
 				</Else>
 			</If>
-			;
+			<EditLink />
+			<DeleteLink />
 		</>
 	);
 };

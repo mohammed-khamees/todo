@@ -8,7 +8,7 @@ const Auth = (props) => {
 	try {
 		okToRender =
 			loginContext.loggedIn && props.capability
-				? loginContext.user.capabilities.includes(props.capability)
+				? loginContext.user.user.capabilities.includes(props.capability)
 				: false;
 	} catch (error) {
 		console.log('NOT AUTHORIZED', error.message);

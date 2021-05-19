@@ -46,7 +46,7 @@ const SignUp = () => {
 					<input
 						type="text"
 						name="username"
-						placeholder="Enter Username"
+						placeholder="Enter Username more than three chars"
 						onChange={handleChangeUsername}
 					/>
 					<input
